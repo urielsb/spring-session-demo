@@ -12,12 +12,16 @@
 	<import resource="classpath:/spring/db-config.xml" />
 
 	<context:annotation-config />
-	<bean class="org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessionConfiguration">
-		<property name="maxInactiveIntervalInSeconds" value="180" />
+	<bean class="org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessionConfiguration" />
+	
+	<bean id="tm" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<constructor-arg ref="dataSource"/>
 	</bean>
 	
-	<bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<constructor-arg ref="dataSource"/>
+	<bean id="sessionRepository" class="com.uriel.session.demo.repository.CustomJdbcOperationsSessionRepository">
+		<constructor-arg ref="dataSource" />
+		<constructor-arg ref="tm" />
+		<property name="defaultMaxInactiveInterval" value="120" />
 	</bean>
 	
 	<bean id="sessionRegistry" class="org.springframework.session.security.SpringSessionBackedSessionRegistry">
@@ -40,5 +44,6 @@
 		</security:authentication-provider>
 	</security:authentication-manager>
 	
+	<bean class="com.uriel.session.demo.listener.ExpiredSessionListener" />
 	
 </beans>
